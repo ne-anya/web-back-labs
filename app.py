@@ -2,6 +2,32 @@ from flask import Flask, url_for, request, redirect
 import datetime
 app = Flask(__name__)
 
+@app.route("/")
+@app.route("/index")
+def index():
+    return """
+<!doctype html>
+<html>
+    <head>
+        <title>НГТУ, ФБ, Лабораторные работы</title>
+    </head>
+    <body>
+        <header>
+            НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+            <hr>
+        </header>
+        <main>
+            <li>
+                <ol><a href="/lab1">Первая лабораторная</a></ol>
+        </main>
+        <footer>
+            <hr>
+            Вотчинникова Анна, ФБИ-33, 3 курс, 2025 год
+        </footer>
+    </body>
+</html>
+"""
+
 @app.route("/lab1/web")
 def web():
     return """<!doctype html>
