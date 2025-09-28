@@ -4,7 +4,7 @@ app = Flask(__name__)
 @app.route("/web")
 def web():
     return """<!doctype html>
-        <html>
+        <html> 
            <body>
                <h1>web-сервер на flask</h1>
                <a href="/author">Автор</a>
@@ -38,4 +38,19 @@ def image():
         <img src="''' + path +'''">
     </body>
 </html>
+'''
+
+count = 0
+
+@app.route('/counter')
+def counter():
+    global count
+    count += 1
+    return '''
+<!doctype html>
+<html>
+    <body>
+        Сколько раз вы сюда заходили: ''' + str(count) + '''
+    </body>
+<html>
 '''
