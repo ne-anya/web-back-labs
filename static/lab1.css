@@ -1,0 +1,12 @@
+body {
+    background-color: gainsboro;
+}
+h1 {
+    text-align: center;
+    color: dimgray;
+}
+img {
+    height: 500px;
+    position: relative;
+    left: 30%;
+}
