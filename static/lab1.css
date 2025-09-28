@@ -1,5 +1,7 @@
 body {
     background-color: gainsboro;
+    color: gray;
+    margin-left: 20px;
 }
 h1 {
     text-align: center;
@@ -9,4 +11,5 @@ img {
     height: 500px;
     position: relative;
     left: 30%;
+    margin: 10px;
 }

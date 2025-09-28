@@ -215,4 +215,17 @@ def teapot():
 
 @app.errorhandler(404)
 def not_found(err):
-    return "нет такой страницы", 404
+    path = url_for("static", filename="404.webp")
+    style = url_for("static", filename="lab1.css")
+    return '''
+<!doctype html>
+<link rel="stylesheet" href="''' + style + '''">
+<html>
+    <body>
+        <h1>Не найдено</h1>
+        <div>Неправильно набран адрес или 
+        такой страницы больше не существует</div>
+        <img src="''' + path +'''">
+    </body>
+</html>
+''', 404
