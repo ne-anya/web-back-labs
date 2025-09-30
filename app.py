@@ -229,3 +229,22 @@ def not_found(err):
     </body>
 </html>
 ''', 404
+
+@app.errorhandler(500)
+def error(err):
+    style = url_for("static", filename="lab1.css")
+    return '''
+<!doctype html>
+<link rel="stylesheet" href="''' + style + '''">
+<html>
+    <body>
+        <h1>500</h1>
+        <div>Внутренняя ошибка сервера</div>
+    </body>
+</html>
+''', 500
+
+@app.route("/server_error")
+def server_error():
+    result = 2 / 0
+    return "Этот код никогда не выполнится"
