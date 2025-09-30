@@ -235,6 +235,9 @@ def teapot():
 def not_found(err):
     path = url_for("static", filename="404.webp")
     style = url_for("static", filename="lab1.css")
+    client_ip = request.remote_addr
+    access_time = datetime.datetime.today()
+    requested_url = request.url
     return '''
 <!doctype html>
 <link rel="stylesheet" href="''' + style + '''">
@@ -244,6 +247,11 @@ def not_found(err):
         <div>Неправильно набран адрес или 
         такой страницы больше не существует</div>
         <img src="''' + path +'''">
+        <div class="info-box">
+            <p><strong>Ваш IP-адрес:</strong>''' + client_ip + '''</p>
+            <p><strong>Дата и время доступа:</strong> ''' + access_time.strftime('%Y-%m-%d %H:%M:%S') + '''</p>
+            <p><strong>Запрошенный адрес:</strong> ''' + requested_url + '''</p>
+        </div>
     </body>
 </html>
 ''', 404
