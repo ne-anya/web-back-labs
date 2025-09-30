@@ -92,7 +92,11 @@ def image():
         <img src="''' + path +'''">
     </body>
 </html>
-'''
+''', 200, {
+    'Content-Language': 'ru-Ru',
+    'X-Server-Location': 'Novosibirsk',
+    'X-Student-Name': 'Anna Votchinnikova'
+}
 
 count = 0
 
