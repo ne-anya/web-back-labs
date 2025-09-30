@@ -45,6 +45,20 @@ def lab1():
             веб-приложений, сознательно предоставляющих лишь самые ба-
             зовые возможности.
         </div>
+        <h2>Список роутов</h2>
+        <li>
+            <ol><a href="/lab1/web">Web</a></ol>
+            <ol><a href="/lab1/author">Author</a></ol>
+            <ol><a href="/lab1/image">Image</a></ol>
+            <ol><a href="/lab1/counter">Counter</a></ol>
+            <ol><a href="/bad_request">Bad request</a></ol>
+            <ol><a href="/unauthorized">Unautorized</a></ol>
+            <ol><a href="/payment_required">Payment Required</a></ol>
+            <ol><a href="/forbidden">Forbidden</a></ol>
+            <ol><a href="/method_not_allowed">Method Not Allowed</a></ol>
+            <ol><a href="/teapot">Teapot</a></ol>
+            <ol><a href="/404">404</a></ol>
+            <ol><a href="/server_error">500</a></ol>
         <a href="/index">На главную страницу</a>
     </body>
 </html>
