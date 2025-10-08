@@ -274,3 +274,11 @@ def error(err):
 def server_error():
     result = 2 / 0
     return "Этот код никогда не выполнится"
+
+@app.route('/lab2/a')
+def a():
+    return 'без слэша'
+
+@app.route('/lab2/a/')
+def a2():
+    return 'со слэшем'
