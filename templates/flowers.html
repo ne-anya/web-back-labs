@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 2{% endblock %}
+
+{% block main %}
+    <h1>Список цветов</h1>
+    
+    {% if flowers %}
+    <div class="flowers-list">
+        {% for flower in flowers %}
+        <div class="flower-item">
+            <span class="flower-number">{{ loop.index }}.</span>
+            <span class="flower-name">{{ flower.name }}</span>
+            <span class="flower-price">- {{ flower.price }} руб</span>
+            <a href="{{ url_for('delete_flower', flower_id=loop.index0) }}" 
+               class="delete-link" 
+               onclick="return confirm('Вы уверены, что хотите удалить {{ flower.name }}?')">
+                удалить
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-message">
+        <p>Список цветов пуст</p>
+    </div>
+    {% endif %}
+
+    <div class="actions">
+        {% if flowers %}
+        <a href="{{ url_for('clear_flowers') }}" 
+           class="clear-all-btn"
+           onclick="return confirm('Вы уверены, что хотите удалить все цветы?')">
+            Удалить все цветы
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="add-flower-form">
+        <h2>Добавить цветок</h2>
+        <form method="GET" action="{{ url_for('add_flower') }}">
+            <div class="form-group">
+                <input type="text" 
+                       name="name" 
+                       placeholder="Название цветка" 
+                       required
+                       class="flower-input">
+                <input type="number" 
+                       name="price" 
+                       placeholder="Цена" 
+                       min="1" 
+                       required
+                       class="price-input">
+                <button type="submit" class="add-btn">Добавить</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
