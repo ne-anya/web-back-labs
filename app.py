@@ -415,3 +415,26 @@ def calc_default():
 @app.route('/lab2/calc/<int:a>')
 def calc_single(a):
     return redirect(f'/lab2/calc/{a}/1')
+
+books_list = [
+    {"author": "Фёдор Достоевский", "title": "Преступление и наказание", "genre": "Роман", "pages": 671},
+    {"author": "Лев Толстой", "title": "Война и мир", "genre": "Роман-эпопея", "pages": 1225},
+    {"author": "Антон Чехов", "title": "Рассказы", "genre": "Рассказы", "pages": 320},
+    {"author": "Михаил Булгаков", "title": "Мастер и Маргарита", "genre": "Роман", "pages": 480},
+    {"author": "Александр Пушкин", "title": "Евгений Онегин", "genre": "Роман в стихах", "pages": 240},
+    {"author": "Николай Гоголь", "title": "Мёртвые души", "genre": "Поэма", "pages": 352},
+    {"author": "Иван Тургенев", "title": "Отцы и дети", "genre": "Роман", "pages": 288},
+    {"author": "Александр Солженицын", "title": "Один день Ивана Денисовича", "genre": "Повесть", "pages": 142},
+    {"author": "Михаил Лермонтов", "title": "Герой нашего времени", "genre": "Роман", "pages": 224},
+    {"author": "Иван Бунин", "title": "Тёмные аллеи", "genre": "Рассказы", "pages": 196},
+    {"author": "Владимир Набоков", "title": "Лолита", "genre": "Роман", "pages": 336},
+    {"author": "Борис Пастернак", "title": "Доктор Живаго", "genre": "Роман", "pages": 592}
+]
+
+@app.route('/lab2/books')
+def books():
+    total_pages = sum(book['pages'] for book in books_list)
+    
+    return render_template('books.html', 
+                         books=books_list, 
+                         total_pages=total_pages)
