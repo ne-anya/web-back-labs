@@ -1,0 +1,27 @@
+body {
+    margin: 0;
+    background-color: palevioletred;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+main {
+    margin-bottom: 40px;
+    padding: 10px;
+}
+
+header {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: pink;
+}
+
+footer {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: pink;
+    text-align: right;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
