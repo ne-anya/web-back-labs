@@ -438,3 +438,150 @@ def books():
     return render_template('books.html', 
                          books=books_list, 
                          total_pages=total_pages)
+
+cats_list = [
+    {
+        "name": "Барсик",
+        "breed": "Британская короткошёрстная",
+        "age": "3 года",
+        "color": "Серый",
+        "image": "barsik.jpg"
+    },
+    {
+        "name": "Мурка",
+        "breed": "Сиамская",
+        "age": "2 года",
+        "color": "Крем-пойнт",
+        "image": "murka.jpg"
+    },
+    {
+        "name": "Васька",
+        "breed": "Дворовый",
+        "age": "4 года",
+        "color": "Рыжий",
+        "image": "vaska.jpg"
+    },
+    {
+        "name": "Снежка",
+        "breed": "Турецкая ангора",
+        "age": "1.5 года",
+        "color": "Белый",
+        "image": "snezhka.jpg"
+    },
+    {
+        "name": "Гарфилд",
+        "breed": "Экзотическая короткошёрстная",
+        "age": "5 лет",
+        "color": "Рыже-белый",
+        "image": "garfield.jpg"
+    },
+    {
+        "name": "Луна",
+        "breed": "Шотландская вислоухая",
+        "age": "2 года",
+        "color": "Серебристый табби",
+        "image": "luna.jpg"
+    },
+    {
+        "name": "Симба",
+        "breed": "Мейн-кун",
+        "age": "4 года",
+        "color": "Красный мраморный",
+        "image": "simba.jpg"
+    },
+    {
+        "name": "Багира",
+        "breed": "Бомбейская",
+        "age": "3 года",
+        "color": "Чёрный",
+        "image": "bagira.jpg"
+    },
+    {
+        "name": "Рыжик",
+        "breed": "Норвежская лесная",
+        "age": "6 лет",
+        "color": "Рыжий с белым",
+        "image": "ryzhik.jpg"
+    },
+    {
+        "name": "Зося",
+        "breed": "Сфинкс",
+        "age": "2 года",
+        "color": "Розовый",
+        "image": "zosya.jpg"
+    },
+    {
+        "name": "Тигра",
+        "breed": "Бенгальская",
+        "age": "3 года",
+        "color": "Леопардовый",
+        "image": "tigra.jpg"
+    },
+    {
+        "name": "Персик",
+        "breed": "Рэгдолл",
+        "age": "2.5 года",
+        "color": "Сил-пойнт",
+        "image": "persik.jpg"
+    },
+    {
+        "name": "Дымка",
+        "breed": "Русская голубая",
+        "age": "4 года",
+        "color": "Голубой",
+        "image": "dymka.jpg"
+    },
+    {
+        "name": "Кексик",
+        "breed": "Скоттиш-страйт",
+        "age": "1 год",
+        "color": "Черепаховый",
+        "image": "keksik.jpg"
+    },
+    {
+        "name": "Ночка",
+        "breed": "Ориентальная",
+        "age": "2 года",
+        "color": "Эбони",
+        "image": "nochka.jpg"
+    },
+    {
+        "name": "Маркиз",
+        "breed": "Персидская",
+        "age": "5 лет",
+        "color": "Дымчатый",
+        "image": "markiz.jpg"
+    },
+    {
+        "name": "Ириска",
+        "breed": "Абиссинская",
+        "age": "3 года",
+        "color": "Дикий",
+        "image": "iriska.jpg"
+    },
+    {
+        "name": "Пушок",
+        "breed": "Сибирская",
+        "age": "4 года",
+        "color": "Чёрный дым",
+        "image": "pushok.jpg"
+    },
+    {
+        "name": "Сема",
+        "breed": "Корниш-рекс",
+        "age": "2 года",
+        "color": "Белый",
+        "image": "sema.jpg"
+    },
+    {
+        "name": "Бусинка",
+        "breed": "Девон-рекс",
+        "age": "1.5 года",
+        "color": "Голубой",
+        "image": "businka.jpg"
+    }
+]
+
+@app.route('/lab2/cats')
+def cats_gallery():
+    return render_template('cats.html', cats=cats_list)
