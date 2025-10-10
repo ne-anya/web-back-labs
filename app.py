@@ -19,6 +19,8 @@ def index():
         <main>
             <li>
                 <ol><a href="/lab1">Первая лабораторная</a></ol>
+                <ol><a href="/lab2">Вторая лабораторная</a></ol>
+            </li>
         </main>
         <footer>
             <hr>
