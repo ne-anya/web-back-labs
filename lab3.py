@@ -173,3 +173,91 @@ def ticket_result():
                          ticket_type=ticket_type,
                          base_price=base_price,
                          additions=additions)
+
+
+@lab3.route('/lab3/search')
+def search():
+    # Список товаров (смартфоны)
+    products = [
+        {'name': 'iPhone 15', 'price': 89990, 'brand': 'Apple', 'color': 'черный', 'storage': '128GB'},
+        {'name': 'Samsung Galaxy S24', 'price': 79990, 'brand': 'Samsung', 'color': 'белый', 'storage': '256GB'},
+        {'name': 'Xiaomi Redmi Note 13', 'price': 24990, 'brand': 'Xiaomi', 'color': 'синий', 'storage': '128GB'},
+        {'name': 'Google Pixel 8', 'price': 64990, 'brand': 'Google', 'color': 'серый', 'storage': '128GB'},
+        {'name': 'OnePlus 12', 'price': 59990, 'brand': 'OnePlus', 'color': 'зеленый', 'storage': '256GB'},
+        {'name': 'iPhone 14', 'price': 69990, 'brand': 'Apple', 'color': 'красный', 'storage': '128GB'},
+        {'name': 'Samsung Galaxy A54', 'price': 32990, 'brand': 'Samsung', 'color': 'фиолетовый', 'storage': '128GB'},
+        {'name': 'Xiaomi 13T', 'price': 44990, 'brand': 'Xiaomi', 'color': 'черный', 'storage': '256GB'},
+        {'name': 'Realme 11 Pro', 'price': 27990, 'brand': 'Realme', 'color': 'золотой', 'storage': '128GB'},
+        {'name': 'Nothing Phone 2', 'price': 49990, 'brand': 'Nothing', 'color': 'белый', 'storage': '256GB'},
+        {'name': 'iPhone 13', 'price': 59990, 'brand': 'Apple', 'color': 'розовый', 'storage': '128GB'},
+        {'name': 'Samsung Galaxy S23', 'price': 64990, 'brand': 'Samsung', 'color': 'кремовый', 'storage': '256GB'},
+        {'name': 'Xiaomi Poco X6', 'price': 21990, 'brand': 'Xiaomi', 'color': 'желтый', 'storage': '128GB'},
+        {'name': 'Google Pixel 7a', 'price': 39990, 'brand': 'Google', 'color': 'коралловый', 'storage': '128GB'},
+        {'name': 'OnePlus Nord 3', 'price': 34990, 'brand': 'OnePlus', 'color': 'серый', 'storage': '256GB'},
+        {'name': 'iPhone SE', 'price': 44990, 'brand': 'Apple', 'color': 'белый', 'storage': '64GB'},
+        {'name': 'Samsung Galaxy Z Flip5', 'price': 99990, 'brand': 'Samsung', 'color': 'фиолетовый', 'storage': '256GB'},
+        {'name': 'Xiaomi Redmi 12', 'price': 15990, 'brand': 'Xiaomi', 'color': 'серебристый', 'storage': '128GB'},
+        {'name': 'Motorola Edge 40', 'price': 37990, 'brand': 'Motorola', 'color': 'черный', 'storage': '256GB'},
+        {'name': 'Honor 90', 'price': 29990, 'brand': 'Honor', 'color': 'изумрудный', 'storage': '256GB'}
+    ]
+    
+    min_price_cookie = request.cookies.get('min_price')
+    max_price_cookie = request.cookies.get('max_price')
+    
+    min_price_form = request.args.get('min_price')
+    max_price_form = request.args.get('max_price')
+    reset = request.args.get('reset')
+    
+    if reset:
+        resp = make_response(render_template('lab3/search.html', 
+                                           products=products, 
+                                           min_price='', 
+                                           max_price='',
+                                           count=len(products)))
+        resp.delete_cookie('min_price')
+        resp.delete_cookie('max_price')
+        return resp
+    
+    if min_price_form is not None or max_price_form is not None:
+        min_price = min_price_form if min_price_form != '' else None
+        max_price = max_price_form if max_price_form != '' else None
+    else:
+        min_price = min_price_cookie
+        max_price = max_price_cookie
+    
+    if min_price and max_price and float(min_price) > float(max_price):
+        min_price, max_price = max_price, min_price
+    
+    filtered_products = []
+    for product in products:
+        price = product['price']
+        if min_price and max_price:
+            if float(min_price) <= price <= float(max_price):
+                filtered_products.append(product)
+        elif min_price:
+            if price >= float(min_price):
+                filtered_products.append(product)
+        elif max_price:
+            if price <= float(max_price):
+                filtered_products.append(product)
+        else:
+            filtered_products.append(product)
+    
+    resp = make_response(render_template('lab3/search.html', 
+                                       products=filtered_products, 
+                                       min_price=min_price or '',
+                                       max_price=max_price or '',
+                                       count=len(filtered_products)))
+    
+    if min_price_form is not None or max_price_form is not None:
+        if min_price:
+            resp.set_cookie('min_price', min_price, max_age=60*60*24*30)
+        else:
+            resp.delete_cookie('min_price')
+        
+        if max_price:
+            resp.set_cookie('max_price', max_price, max_age=60*60*24*30)
+        else:
+            resp.delete_cookie('max_price')
+    
+    return resp
