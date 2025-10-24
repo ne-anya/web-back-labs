@@ -9,7 +9,7 @@
         {% for cat in cats %}
         <div class="cat-card">
             <div class="cat-image">
-                <img src="{{ url_for('static', filename=cat.image) }}" 
+                <img src="{{ url_for('static', filename='lab2/'+ cat.image) }}" 
                      alt="{{ cat.name }}" 
                      loading="lazy">
             </div>
