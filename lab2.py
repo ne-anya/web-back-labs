@@ -24,8 +24,8 @@ flower_list = [
 
 
 @lab2.route('/lab2/flowers')
-def all_flowers():
-    return render_template('flowers.html', flowers=flower_list)
+def flowers():
+    return render_template('lab2/flowers.html', flowers=flower_list)
 
 
 @lab2.route('/lab2/add_flower')
@@ -45,7 +45,7 @@ def add_flower():
     
     flower_list.lab2end({"name": name, "price": price_int})
     
-    return redirect(url_for('all_flowers'))
+    return redirect(url_for('flowers'))
 
 
 @lab2.route('/lab2/del_flower/<int:flower_id>')
@@ -55,13 +55,13 @@ def delete_flower(flower_id):
     
     deleted_flower = flower_list.pop(flower_id)
     
-    return redirect(url_for('all_flowers'))
+    return redirect(url_for('flowers'))
 
 
 @lab2.route('/lab2/clear_flowers')
 def clear_flowers():
     flower_list.clear()
-    return redirect(url_for('all_flowers'))
+    return redirect(url_for('flowers'))
 
 
 @lab2.route('/lab2/flower/<int:flower_id>')
@@ -112,20 +112,20 @@ def example():
         {'name': 'мандарины', 'price': 95}, 
         {'name': 'манго', 'price': 321} 
     ]
-    return render_template('example.html', 
+    return render_template('lab2/example.html', 
                            name=name, lab=lab, group=group, 
                            course=course, fruits=fruits)
 
 
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 
 @lab2.route('/lab2/filters')
 def filters():
     phrase = "0 <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase=phrase)
+    return render_template('lab2/filter.html', phrase=phrase)
 
 
 @lab2.route('/lab2/calc/<int:a>/<int:b>')
@@ -178,7 +178,7 @@ books_list = [
 def books():
     total_pages = sum(book['pages'] for book in books_list)
     
-    return render_template('books.html', 
+    return render_template('lab2/books.html', 
                          books=books_list, 
                          total_pages=total_pages)
 
@@ -329,4 +329,4 @@ cats_list = [
 
 @lab2.route('/lab2/cats')
 def cats_gallery():
-    return render_template('cats.html', cats=cats_list)
+    return render_template('lab2/cats.html', cats=cats_list)

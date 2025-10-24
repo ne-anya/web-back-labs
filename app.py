@@ -43,8 +43,8 @@ def index():
 
 @app.errorhandler(404)
 def not_found(err):
-    path = url_for("static", filename="404.webp")
-    style = url_for("static", filename="lab1.css")
+    path = url_for("static", filename="lab1/404.webp")
+    style = url_for("static", filename="lab1/lab1.css")
     client_ip = request.remote_addr
     access_time = datetime.datetime.today()
     requested_url = request.url
@@ -69,7 +69,7 @@ def not_found(err):
 
 @app.errorhandler(500)
 def error(err):
-    style = url_for("static", filename="lab1.css")
+    style = url_for("static", filename="lab1/lab1.css")
     return '''
 <!doctype html>
 <link rel="stylesheet" href="''' + style + '''">
