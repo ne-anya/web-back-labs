@@ -99,3 +99,77 @@ def settings():
 
     resp = make_response(render_template('lab3/settings.html', color=color, bg_color=bg_color, font_size=font_size, font_style=font_style))
     return resp
+
+
+@lab3.route('/lab3/ticket')
+def ticket():
+    return render_template('lab3/ticket.html')
+
+@lab3.route('/lab3/ticket_result')
+def ticket_result():
+    fio = request.args.get('fio')
+    shelf = request.args.get('shelf')
+    linen = request.args.get('linen')
+    baggage = request.args.get('baggage')
+    age = request.args.get('age')
+    departure = request.args.get('departure')
+    destination = request.args.get('destination')
+    date = request.args.get('date')
+    insurance = request.args.get('insurance')
+    
+    errors = []
+    if not fio:
+        errors.append("ФИО пассажира обязательно")
+    if not shelf:
+        errors.append("Выберите полку")
+    if not age:
+        errors.append("Возраст обязателен")
+    elif not age.isdigit() or int(age) < 1 or int(age) > 120:
+        errors.append("Возраст должен быть от 1 до 120 лет")
+    if not departure:
+        errors.append("Пункт выезда обязателен")
+    if not destination:
+        errors.append("Пункт назначения обязателен")
+    if not date:
+        errors.append("Дата поездки обязательна")
+    
+    if errors:
+        return render_template('lab3/ticket.html', errors=errors)
+    
+    if int(age) < 18:
+        ticket_type = "Детский билет"
+        base_price = 700
+    else:
+        ticket_type = "Взрослый билет"
+        base_price = 1000
+    
+    additions = []
+    if shelf in ['lower', 'lower-side']:
+        base_price += 100
+        additions.append("+100 руб. (нижняя полка)")
+    
+    if linen == 'on':
+        base_price += 75
+        additions.append("+75 руб. (бельё)")
+    
+    if baggage == 'on':
+        base_price += 250
+        additions.append("+250 руб. (багаж)")
+    
+    if insurance == 'on':
+        base_price += 150
+        additions.append("+150 руб. (страховка)")
+    
+    return render_template('lab3/ticket_result.html',
+                         fio=fio,
+                         shelf=shelf,
+                         linen=linen,
+                         baggage=baggage,
+                         age=age,
+                         departure=departure,
+                         destination=destination,
+                         date=date,
+                         insurance=insurance,
+                         ticket_type=ticket_type,
+                         base_price=base_price,
+                         additions=additions)

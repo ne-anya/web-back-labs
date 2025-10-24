@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block lab %}Лаборатораная работа 3{% endblock %}
+
+{% block main %}
+<h1>Железнодорожный билет оформлен!</h1>
+
+<div style="border: 2px solid #333; padding: 20px; margin: 20px 0; background: #f9f9f9;">
+    <h2 style="margin-top: 0;">Проездной документ</h2>
+    <div style="background: #e3f2fd; padding: 5px 10px; display: inline-block; margin-bottom: 15px;">
+        {{ ticket_type }}
+    </div>
+    
+    <table style="width: 100%;">
+        <tr>
+            <td style="padding: 8px 0;"><strong>Пассажир:</strong></td>
+            <td>{{ fio }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Возраст:</strong></td>
+            <td>{{ age }} лет</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Маршрут:</strong></td>
+            <td>{{ departure }} → {{ destination }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Дата:</strong></td>
+            <td>{{ date }}</td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Место:</strong></td>
+            <td>
+                {% if shelf == 'upper' %}Верхняя полка
+                {% elif shelf == 'lower' %}Нижняя полка
+                {% elif shelf == 'upper-side' %}Верхняя боковая
+                {% elif shelf == 'lower-side' %}Нижняя боковая
+                {% endif %}
+            </td>
+        </tr>
+        <tr>
+            <td style="padding: 8px 0;"><strong>Услуги:</strong></td>
+            <td>
+                {% if linen == 'on' %}✅ Бельё<br>{% endif %}
+                {% if baggage == 'on' %}✅ Багаж<br>{% endif %}
+                {% if insurance == 'on' %}✅ Страховка<br>{% endif %}
+                {% if linen != 'on' and baggage != 'on' and insurance != 'on' %}Нет{% endif %}
+            </td>
+        </tr>
+    </table>
+    
+    <div style="border-top: 1px solid #ccc; margin-top: 20px; padding-top: 15px;">
+        <h3>Стоимость:</h3>
+        <table style="width: 100%;">
+            <tr>
+                <td>Базовая стоимость:</td>
+                <td>
+                    {% if age|int < 18 %}700 руб. (детский)
+                    {% else %}1000 руб. (взрослый)
+                    {% endif %}
+                </td>
+            </tr>
+            {% for addition in additions %}
+            <tr>
+                <td>{{ addition.split('(')[1][:-1] }}:</td>
+                <td>{{ addition.split(' ')[0] }} руб.</td>
+            </tr>
+            {% endfor %}
+            <tr style="border-top: 1px solid #333; font-weight: bold;">
+                <td>Итого:</td>
+                <td>{{ base_price }} руб.</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div>
+    <a href="/lab3/ticket">Оформить новый билет</a> | 
+    <a href="/lab3/">В меню</a>
+</div>
+{% endblock %}

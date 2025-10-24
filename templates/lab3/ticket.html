@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block lab %}Лаборатораная работа 3{% endblock %}
+
+{% block main %}
+<h1>Оформление железнодорожного билета</h1>
+
+{% if errors %}
+<div style="background: #ffebee; padding: 15px; border: 1px solid #f44336; margin: 20px 0;">
+    <h3>Ошибки:</h3>
+    <ul>
+        {% for error in errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="GET" action="/lab3/ticket_result">
+    <h3>Данные пассажира</h3>
+    
+    <div>
+        <label>ФИО пассажира:</label><br>
+        <input type="text" name="fio" value="{{ request.args.get('fio', '') }}" required style="width: 300px;">
+    </div>
+    
+    <div>
+        <label>Возраст:</label><br>
+        <input type="number" name="age" min="1" max="120" required style="width: 100px;">
+    </div>
+
+    <h3>Место в вагоне</h3>
+    
+    <div>
+        <label>Тип полки:</label><br>
+        <label><input type="radio" name="shelf" value="upper" required> Верхняя</label><br>
+        <label><input type="radio" name="shelf" value="lower" required> Нижняя (+100 руб.)</label><br>
+        <label><input type="radio" name="shelf" value="upper-side" required> Верхняя боковая</label><br>
+        <label><input type="radio" name="shelf" value="lower-side" required> Нижняя боковая (+100 руб.)</label>
+    </div>
+    
+    <div>
+        <label><input type="checkbox" name="linen"> Бельё (+75 руб.)</label><br>
+        <label><input type="checkbox" name="baggage"> Багаж (+250 руб.)</label>
+    </div>
+
+    <h3>Маршрут</h3>
+    
+    <div>
+        <label>Пункт выезда:</label><br>
+        <input type="text" name="departure" value="{{ request.args.get('departure', '') }}" required style="width: 300px;">
+    </div>
+    
+    <div>
+        <label>Пункт назначения:</label><br>
+        <input type="text" name="destination" value="{{ request.args.get('destination', '') }}" required style="width: 300px;">
+    </div>
+    
+    <div>
+        <label>Дата поездки:</label><br>
+        <input type="date" name="date" required>
+    </div>
+
+    <h3>Дополнительные услуги</h3>
+    
+    <div>
+        <label><input type="checkbox" name="insurance"> Страховка (+150 руб.)</label>
+    </div>
+
+    <div style="margin: 20px 0;">
+        <button type="submit">Оформить билет</button>
+        <button type="reset">Очистить</button>
+    </div>
+</form>
+{% endblock %}
