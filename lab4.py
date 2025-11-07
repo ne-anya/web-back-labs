@@ -202,3 +202,69 @@ def fridge():
                          message=message, 
                          snowflakes=snowflakes, 
                          temperature=temperature)
+
+
+@lab4.route('/lab4/grain_order')
+def grain_order_form():
+    return render_template('lab4/grain_order.html')
+
+@lab4.route('/lab4/grain_order', methods=['POST'])
+def grain_order():
+    grain_type = request.form.get('grain_type')
+    weight_str = request.form.get('weight')
+    
+    prices = {
+        'barley': 12000,   # ячмень
+        'oats': 8500,      # овёс
+        'wheat': 9000,     # пшеница
+        'rye': 15000       # рожь
+    }
+    
+    grain_names = {
+        'barley': 'ячмень',
+        'oats': 'овёс', 
+        'wheat': 'пшеница',
+        'rye': 'рожь'
+    }
+    
+    if not weight_str:
+        return render_template('lab4/grain_order.html', 
+                             error='Ошибка: не указан вес заказа')
+    
+    try:
+        weight = float(weight_str)
+    except ValueError:
+        return render_template('lab4/grain_order.html', 
+                             error='Ошибка: вес должен быть числом')
+    
+    if weight <= 0:
+        return render_template('lab4/grain_order.html', 
+                             error='Ошибка: вес должен быть больше 0')
+    
+    if weight > 100:
+        return render_template('lab4/grain_order.html', 
+                             error='Извините, такого объёма сейчас нет в наличии')
+    
+    if not grain_type or grain_type not in prices:
+        return render_template('lab4/grain_order.html', 
+                             error='Ошибка: не выбрано зерно')
+    
+    price_per_ton = prices[grain_type]
+    total_cost = weight * price_per_ton
+    discount = 0
+    discount_applied = False
+    
+    if weight > 10:
+        discount = total_cost * 0.10
+        total_cost -= discount
+        discount_applied = True
+    
+    grain_name = grain_names[grain_type]
+    
+    return render_template('lab4/grain_order.html',
+                         success=True,
+                         grain_name=grain_name,
+                         weight=weight,
+                         total_cost=total_cost,
+                         discount_applied=discount_applied,
+                         discount=discount)
