@@ -119,10 +119,10 @@ def tree():
 
 
 users = [
-    {'login': 'alex', 'password': '123'},
-    {'login': 'bob', 'password': '555'},
-    {'login': 'anna', 'password': '654'},
-    {'login': 'liza', 'password': '987'},
+    {'login': 'alex', 'password': '123', 'name': 'Александр Петров', 'gender': 'male'},
+    {'login': 'maria', 'password': '555', 'name': 'Мария Иванова', 'gender': 'female'},
+    {'login': 'anna', 'password': '654', 'name': 'Анна Вотчинникова', 'gender': 'female'},
+    {'login': 'liza', 'password': '987', 'name': 'Елизавета Иванова', 'gender': 'female'},
 ]
 
 
@@ -131,14 +131,24 @@ def login():
     if request.method == 'GET':
         if 'login' in session:
             authorized = True
-            login = session['login']
+            user_data = next((user for user in users if user['login'] == session['login']), None)
+            name = user_data['name'] if user_data else session['login']
+            return render_template("lab4/login.html", authorized=authorized, name=name)
         else:
             authorized = False
-            login = ''
-        return render_template("lab4/login.html", authorized=authorized, login=login)
+            return render_template("lab4/login.html", authorized=authorized)
     
     login = request.form.get('login')
     password = request.form.get('password')
+    previous_login = login
+
+    if not login:
+        error = 'Не введён логин'
+        return render_template('lab4/login.html', error=error, authorized=False, previous_login=previous_login)
+    
+    if not password:
+        error = 'Не введён пароль'
+        return render_template('lab4/login.html', error=error, authorized=False, previous_login=previous_login)
 
     for user in users:
         if login == user['login'] and password == user['password']:
@@ -146,7 +156,7 @@ def login():
             return redirect('/lab4/login')
     
     error = 'Неверные логин и/или пароль'
-    return render_template('lab4/login.html', error=error, authorized=False)
+    return render_template('lab4/login.html', error=error, authorized=False, previous_login=previous_login)
 
 
 @lab4.route('/lab4/logout', methods = ['POST'])
