@@ -7,6 +7,9 @@ import datetime
 
 
 app = Flask(__name__)
+
+app.secret_key = 'секретно-секретный секрет'
+
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
 app.register_blueprint(lab3)
