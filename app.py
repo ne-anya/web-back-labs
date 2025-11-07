@@ -2,6 +2,7 @@ from flask import Flask, url_for, request, redirect, abort, render_template
 from lab1 import lab1
 from lab2 import lab2
 from lab3 import lab3
+from lab4 import lab4
 import datetime
 
 
@@ -9,6 +10,7 @@ app = Flask(__name__)
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
 app.register_blueprint(lab3)
+app.register_blueprint(lab4)
 
 
 @app.route("/")
@@ -30,6 +32,7 @@ def index():
                 <ol><a href="/lab1">Первая лабораторная</a></ol>
                 <ol><a href="/lab2">Вторая лабораторная</a></ol>
                 <ol><a href="/lab3/">Третья лабораторная</a></ol>
+                <ol><a href="/lab4/">Четвертая лаборатораная</a></ol>
             </li>
         </main>
         <footer>
@@ -86,4 +89,5 @@ def error(err):
 def server_error():
     result = 2 / 0
     return "Этот код никогда не выполнится"
+
 
