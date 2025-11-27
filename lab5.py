@@ -123,13 +123,13 @@ def create():
     else:
         cur.execute("SELECT * FROM users WHERE login=?;", (login, ))
 
-    user_id = cur.fetchone()["id"]
+    login_id = cur.fetchone()["id"]
 
     if current_app.config['DB_TYPE'] == 'potgres':
-        cur.execute("INSERT INTO articles(user_id, title, article_text) \
+        cur.execute("INSERT INTO articles(login_id, title, article_text) \
                 VALUES(%s, %s, %s);", (login, title, article_text))
     else:
-        cur.execute("INSERT INTO articles(user_id, title, article_text) \
+        cur.execute("INSERT INTO articles(login_id, title, article_text) \
                 VALUES(?, ?, ?);", (login, title, article_text))
     
     db_close(conn, cur)
@@ -149,13 +149,13 @@ def list():
     else:
         cur.execute("SELECT id FROM users WHERE login=?;", (login, ))
 
-    user_id = cur.fetchone() ["id"]
+    login_id = cur.fetchone() ["id"]
 
     if current_app.config['DB_TYPE'] == 'potgres':
-        cur.execute("SELECT * FROM articles WHERE user_id=%s;", (user_id, ))
+        cur.execute("SELECT * FROM articles WHERE login_id=%s;", (login_id, ))
     else:
-        cur.execute("SELECT * FROM articles WHERE user_id=?;", (user_id, ))
-        
+        cur.execute("SELECT * FROM articles WHERE login_id=?;", (login_id, ))
+
     articles = cur.fetchall()
 
     db_close(conn, cur)
