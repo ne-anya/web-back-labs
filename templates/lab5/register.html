@@ -4,6 +4,13 @@
 
 {% block main %}
     <h1>Регистрация</h1>
+
+    {% if error %}
+        <div class="error" style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red;">
+            {{ error }}
+        </div>
+    {% endif %}
+
     <form action="/lab5/register" method="post">
         <div>
             <label>
@@ -16,11 +23,18 @@
                 Пароль: <input type="password" name="password">
             </label>
         </div>
-        {% if error %}
-            {{ error }}
-        {% endif %}
+
+        <div>
+            <label>
+                Реальное имя: <input type="text" name="real_name">
+            </label>
+        </div>
+
         <br>
         <button type="submit">Зарегистрироваться</button>
     </form>
+    <div style="margin-top: 20px;">
+        <a href="/lab5/login">Уже есть аккаунт? Войдите</a>
+    </div>
 
 {% endblock %}

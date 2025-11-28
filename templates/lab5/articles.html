@@ -12,24 +12,36 @@
     
     {% if articles %}
         {% for article in articles %}
-            <div class="article" style="margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <h2 style="margin: 0;">{{ article['title'] }}</h2>
+            <div class="article" style="margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #fff;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
                     <div>
-                        <a href="/lab5/edit/{{ article['id'] }}" 
-                            style="background-color: #ffc107; color: black; padding: 5px 10px; text-decoration: none; border-radius: 3px; margin-right: 10px;">
-                            Редактировать
-                        </a>
-                        <a href="/lab5/delete/{{ article['id'] }}" 
-                            class="delete-btn" 
-                            onclick="return confirm('Вы уверены, что хотите удалить эту статью?')"
-                            style="background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">
-                            Удалить
-                        </a>
+                        <h2 style="margin: 0 0 5px 0; color: #333;">{{ article['title'] }}</h2>
+                        <div style="display: flex; gap: 10px; font-size: 14px;">
+                            {% if article['is_public'] %}
+                                <span style="background-color: #28a745; color: white; padding: 3px 8px; border-radius: 12px;">
+                                    🌐 Публичная
+                                </span>
+                            {% else %}
+                                <span style="background-color: #6c757d; color: white; padding: 3px 8px; border-radius: 12px;">
+                                    🔒 Приватная
+                                </span>
+                            {% endif %}
+                
+                            {% if article['is_favorite'] %}
+                                <span style="background-color: #ffc107; color: black; padding: 3px 8px; border-radius: 12px;">
+                                    ★ Избранная
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div>
+                        <a href="/lab5/edit/{{ article['id'] }}" class="edit-btn">Редактировать</a>
+                        <a href="/lab5/delete/{{ article['id'] }}" class="delete-btn" 
+                            onclick="return confirm('Вы уверены, что хотите удалить эту статью?')">Удалить</a>
                     </div>
                 </div>
-                <blockquote style="background: #f9f9f9; padding: 15px; border-left: 4px solid #ccc; margin: 0;">
-                    {{ article['article_text'] | replace('\n', '<br>') | safe }}
+                <blockquote style="background: #f9f9f9; padding: 15px; border-left: 4px solid #ccc; margin: 0; white-space: pre-line;">
+                    {{ article['article_text'] }}
                 </blockquote>
             </div>
         {% endfor %}

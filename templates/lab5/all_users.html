@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5 - Все пользователи{% endblock %}
+
+{% block main %}
+<h1>Зарегистрированные пользователи</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="/lab5">На главную</a> | 
+    <a href="/lab5/list">Мои статьи</a>
+    {% if session.get('login') %}
+     | <a href="/lab5/profile">Мой профиль</a> | 
+    <a href="/lab5/logout">Выйти</a>
+    {% endif %}
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <thead>
+        <tr style="background-color: #f8f9fa;">
+            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Логин</th>
+            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #dee2e6;">Реальное имя</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr style="border-bottom: 1px solid #dee2e6;">
+            <td style="padding: 12px;">{{ user['login'] }}</td>
+            <td style="padding: 12px;">{{ user['real_name'] or 'Не указано' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="margin-top: 20px; color: #666;">Всего пользователей: {{ users|length }}</p>
+{% endblock %}

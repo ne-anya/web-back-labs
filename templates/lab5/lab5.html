@@ -6,15 +6,19 @@
 {% block main %}
     <h1 class="base-h1">База знаний</h1>
     <div class="base-container">
-        <a href="/lab5/list" class="base-a">Список статей</a>
+        <a href="/lab5/list" class="base-a">Мои статьи</a>
+        <a href="/lab5/public" class="base-a">Публичные статьи</a>
+        <a href="/lab5/users" class="base-a">Все пользователи</a>
         <a href="/lab5/create" class="base-a">Создать статью</a>
-        {% if login %}
-            <a href="/lab5/logout" class="base-a">Выйти</a>
-            <div class="name">{{ login }}</div>
-        {% else %}
-            <a href="/lab5/login" class="base-a">Войти</a>
-            <a href="/lab5/register" class="base-a">Регистрация</a>
-            <div class="name">Anonymous</div>
-        {% endif %}
+    
+    {% if login %}
+        <a href="/lab5/profile" class="base-a">Мой профиль</a>
+        <a href="/lab5/logout" class="base-a logout-btn">Выйти</a>
+        <div class="name">{{ login }}</div>
+    {% else %}
+        <a href="/lab5/login" class="base-a">Войти</a>
+        <a href="/lab5/register" class="base-a">Регистрация</a>
+        <div class="name">Anonymous</div>
+    {% endif %}
     </div>
 {% endblock %}

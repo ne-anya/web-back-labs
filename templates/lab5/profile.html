@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5 - Мой профиль{% endblock %}
+
+{% block main %}
+<h1>Мой профиль</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="/lab5">На главную</a> | 
+    <a href="/lab5/list">Мои статьи</a> | 
+    <a href="/lab5/users">Все пользователи</a> | 
+    <a href="/lab5/logout">Выйти</a>
+</div>
+
+{% if request.args.get('message') %}
+<div class="success" style="color: green; margin-bottom: 15px; padding: 10px; border: 1px solid green; background-color: #f0fff0;">
+    {{ request.args.get('message') }}
+</div>
+{% endif %}
+
+{% if errors %}
+<div class="errors" style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red; background-color: #fff0f0;">
+    <ul style="margin: 0; padding-left: 20px;">
+        {% for error in errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<form method="post">
+    <div style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3 style="margin-top: 0;">Основная информация</h3>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">
+                Логин:
+            </label>
+            <input type="text" value="{{ session.get('login') }}" disabled 
+                   style="width: 300px; padding: 8px; border: 1px solid #ccc; background-color: #f8f9fa;">
+            <small style="display: block; color: #666; margin-top: 5px;">Логин нельзя изменить</small>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">
+                Реальное имя:
+            </label>
+            <input type="text" name="real_name" value="{{ user['real_name'] or '' }}" 
+                   style="width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" 
+                   placeholder="Введите ваше реальное имя">
+        </div>
+    </div>
+
+    <div style="margin-bottom: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+        <h3 style="margin-top: 0;">Смена пароля</h3>
+        <small style="color: #666; display: block; margin-bottom: 15px;">Заполняйте только если хотите сменить пароль</small>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">
+                Текущий пароль:
+            </label>
+            <input type="password" name="current_password" 
+                   style="width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">
+                Новый пароль:
+            </label>
+            <input type="password" name="new_password" 
+                   style="width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px; font-weight: bold;">
+                Подтверждение пароля:
+            </label>
+            <input type="password" name="confirm_password" 
+                   style="width: 300px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+    </div>
+
+    <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+        Сохранить изменения
+    </button>
+    <a href="/lab5" style="margin-left: 10px; color: #6c757d; text-decoration: none; padding: 10px 20px; border: 1px solid #6c757d; border-radius: 4px;">
+        Отмена
+    </a>
+</form>
+{% endblock %}

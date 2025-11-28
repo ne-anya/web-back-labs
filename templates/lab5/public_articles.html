@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5 - Публичные статьи{% endblock %}
+
+{% block main %}
+<h1>Публичные статьи</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="/lab5">На главную</a>
+    {% if login %}
+     | <a href="/lab5/list">Мои статьи</a> | 
+    <a href="/lab5/users">Все пользователи</a> | 
+    <a href="/lab5/logout">Выйти</a>
+    {% else %}
+     | <a href="/lab5/login">Войти</a> | 
+    <a href="/lab5/register">Регистрация</a>
+    {% endif %}
+</div>
+
+{% if request.args.get('message') %}
+    <div class="success" style="color: green; margin: 20px 0; padding: 10px; border: 1px solid green; background-color: #f0fff0;">
+        {{ request.args.get('message') }}
+    </div>
+{% endif %}
+
+{% if articles %}
+    <p>Найдено публичных статей: {{ articles|length }}</p>
+    
+    {% for article in articles %}
+        <div class="article public-article" style="margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #fff;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div>
+                    <h2 style="margin: 0 0 5px 0; color: #333;">{{ article['title'] }}</h2>
+                    <p style="margin: 0; color: #666; font-size: 14px;">
+                        Автор: {{ article['real_name'] or article['login'] }}
+                        {% if article['likes'] %}
+                         | ♥ {{ article['likes'] }}
+                        {% endif %}
+                    </p>
+                </div>
+                {% if article['is_favorite'] %}
+                <span style="background-color: #ffc107; color: black; padding: 3px 8px; border-radius: 12px; font-size: 12px;">
+                    ★ Избранная
+                </span>
+                {% endif %}
+            </div>
+            <blockquote style="background: #f9f9f9; padding: 15px; border-left: 4px solid #007bff; margin: 0; white-space: pre-line;">
+                {{ article['article_text'] }}
+            </blockquote>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="no-articles" style="text-align: center; margin: 40px 0; color: #666;">
+        <h3>Пока нет публичных статей</h3>
+        <p>Статьи станут видны здесь, когда авторы отметят их как публичные.</p>
+        {% if login %}
+        <p><a href="/lab5/create">Создайте статью и сделайте её публичной!</a></p>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

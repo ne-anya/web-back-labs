@@ -18,22 +18,48 @@
 {% endif %}
 
 <form method="post">
-    <div>
-        <label>
+    <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">
             Название статьи:
-            <input type="text" maxlength="50" name="title" 
-                   value="{{ article['title'] }}" required>
+        </label>
+        <input type="text" maxlength="50" name="title" 
+               value="{{ article['title'] }}" 
+               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" 
+               required>
+    </div>
+    
+    <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 5px; font-weight: bold;">
+            Текст статьи:
+        </label>
+        <textarea name="article_text" rows="15" 
+                  style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit;" 
+                  required>{{ article['article_text'] }}</textarea>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="is_public" value="true" 
+                   {{ 'checked' if article['is_public'] }}>
+            <span>Сделать статью публичной (видимой для всех пользователей)</span>
+        </label>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" name="is_favorite" value="true"
+                   {{ 'checked' if article['is_favorite'] }}>
+            <span>Добавить в избранное</span>
         </label>
     </div>
     
-    <div>
-        <label>Текст статьи:</label>
-        <textarea name="article_text" rows="15" style="width: 100%;" required>{{ article['article_text'] }}</textarea>
-    </div>
-    
-    <div>
-        <button type="submit" style="background-color: #28a745;">Сохранить изменения</button>
-        <a href="/lab5/list" style="margin-left: 10px; color: #6c757d;">Отмена</a>
+    <div style="display: flex; gap: 10px; align-items: center;">
+        <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Сохранить изменения
+        </button>
+        <a href="/lab5/list" style="color: #6c757d; text-decoration: none; padding: 10px 20px; border: 1px solid #6c757d; border-radius: 4px;">
+            Отмена
+        </a>
         <a href="/lab5/delete/{{ article['id'] }}" 
            onclick="return confirm('Вы уверены, что хотите удалить эту статью?')"
            style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: auto;">
