@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 5 - Редактирование статьи{% endblock %}
+
+{% block main %}
+<h1>Редактирование статьи</h1>
+
+<div style="margin-bottom: 20px;">
+    <a href="/lab5">На главную</a> | 
+    <a href="/lab5/list">Мои статьи</a> | 
+    <a href="/lab5/logout">Выйти</a>
+</div>
+
+{% if error %}
+<div class="error" style="color: red; margin-bottom: 15px; padding: 10px; border: 1px solid red;">
+    {{ error }}
+</div>
+{% endif %}
+
+<form method="post">
+    <div>
+        <label>
+            Название статьи:
+            <input type="text" maxlength="50" name="title" 
+                   value="{{ article['title'] }}" required>
+        </label>
+    </div>
+    
+    <div>
+        <label>Текст статьи:</label>
+        <textarea name="article_text" rows="15" style="width: 100%;" required>{{ article['article_text'] }}</textarea>
+    </div>
+    
+    <div>
+        <button type="submit" style="background-color: #28a745;">Сохранить изменения</button>
+        <a href="/lab5/list" style="margin-left: 10px; color: #6c757d;">Отмена</a>
+        <a href="/lab5/delete/{{ article['id'] }}" 
+           onclick="return confirm('Вы уверены, что хотите удалить эту статью?')"
+           style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; margin-left: auto;">
+            Удалить статью
+        </a>
+    </div>
+</form>
+{% endblock %}
