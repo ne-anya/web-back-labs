@@ -1,25 +1,66 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, redirect, current_app
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import sqlite3
+from os import path
 
 lab6 = Blueprint('lab6', __name__)
 
-offices = []
-for i in range (1, 11):
-    offices.append({"number": i, "tenant": "", 'price': 1000})
+def db_connect():
+    if current_app.config['DB_TYPE'] == 'postgres':
+        conn = psycopg2.connect(
+            host='127.0.0.1',
+            database='anna_votchinnikova_knowledge_base',
+            user='anna_votchinnikova_knowledge_base',
+            password='123'
+        )
+        cur = conn.cursor(cursor_factory=RealDictCursor)
+    else:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
 
+    return conn, cur
+
+def db_close(conn, cur):
+    conn.commit()
+    cur.close()
+    conn.close()
 
 @lab6.route('/lab6/')
 def main():
     return render_template('lab6/lab6.html')
 
-
 @lab6.route('/lab6/json-rpc-api/', methods=['POST'])
 def api():
     data = request.json
     id = data['id']
+    
     if data['method'] == 'info':
+        # Получаем все офисы из базы данных
+        conn, cur = db_connect()
+        
+        if current_app.config['DB_TYPE'] == 'postgres':
+            cur.execute("SELECT number, tenant, price FROM offices ORDER BY number;")
+        else:
+            cur.execute("SELECT number, tenant, price FROM offices ORDER BY number;")
+        
+        offices_db = cur.fetchall()
+        db_close(conn, cur)
+        
+        offices_list = []
+        for office in offices_db:
+            offices_list.append({
+                'number': office['number'],
+                'tenant': office['tenant'] if office['tenant'] else '',
+                'price': office['price']
+            })
+        
         return {
             'jsonrpc': '2.0',
-            'result': offices,
+            'result': offices_list,
             'id': id
         }
 
@@ -36,72 +77,152 @@ def api():
     
     if data['method'] == 'booking':
         office_number = data['params']
-        for office in offices:
-            if office['number'] == office_number:
-                if office['tenant'] != '':
-                    return {
-                        'jsonrpc': '2.0',
-                        'error': {
-                            'code': 2,
-                            'message': 'Already booked'
-                        },
-                        'id': id
-                    }
-                
-                office['tenant'] = login
+        
+        conn, cur = db_connect()
+        
+        try:
+            # Проверяем, существует ли офис
+            if current_app.config['DB_TYPE'] == 'postgres':
+                cur.execute("SELECT tenant FROM offices WHERE number = %s;", (office_number,))
+            else:
+                cur.execute("SELECT tenant FROM offices WHERE number = ?;", (office_number,))
+            
+            office = cur.fetchone()
+            
+            if not office:
+                db_close(conn, cur)
                 return {
                     'jsonrpc': '2.0',
-                    'result': 'success',
+                    'error': {
+                        'code': 5,
+                        'message': 'Office not found'
+                    },
                     'id': id
                 }
-    
-    elif data['method'] == 'cancellation':
-        login = session.get('login')
-        if not login:
+            
+            if office['tenant']:
+                db_close(conn, cur)
+                return {
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': 2,
+                        'message': 'Already booked'
+                    },
+                    'id': id
+                }
+            
+            if current_app.config['DB_TYPE'] == 'postgres':
+                cur.execute(
+                    "UPDATE offices SET tenant = %s WHERE number = %s;",
+                    (login, office_number)
+                )
+            else:
+                cur.execute(
+                    "UPDATE offices SET tenant = ? WHERE number = ?;",
+                    (login, office_number)
+                )
+            
+            db_close(conn, cur)
+            return {
+                'jsonrpc': '2.0',
+                'result': 'success',
+                'id': id
+            }
+            
+        except Exception as e:
+            conn.rollback()
+            db_close(conn, cur)
             return {
                 'jsonrpc': '2.0',
                 'error': {
-                    'code': 1,
-                    'message': 'Unauthorized'
+                    'code': -1,
+                    'message': f'Database error: {str(e)}'
                 },
                 'id': id
             }
-        
+    
+    elif data['method'] == 'cancellation':
         office_number = data['params']
-        for office in offices:
-            if office['number'] == office_number:
-                if not office.get('tenant'):
-                    return {
-                        'jsonrpc': '2.0',
-                        'error': {
-                            'code': 3,
-                            'message': 'Office is not rented'
-                        },
-                        'id': id
-                    }
-                
-                if office['tenant'] != login:
-                    return {
-                        'jsonrpc': '2.0',
-                        'error': {
-                            'code': 4,
-                            'message': 'Not your reservation'
-                        },
-                        'id': id
-                    }
-                
-                office['tenant'] = None
+        
+        conn, cur = db_connect()
+        
+        try:
+            # Проверяем, существует ли офис
+            if current_app.config['DB_TYPE'] == 'postgres':
+                cur.execute("SELECT tenant FROM offices WHERE number = %s;", (office_number,))
+            else:
+                cur.execute("SELECT tenant FROM offices WHERE number = ?;", (office_number,))
+            
+            office = cur.fetchone()
+            
+            if not office:
+                db_close(conn, cur)
                 return {
                     'jsonrpc': '2.0',
-                    'result': 'success',
+                    'error': {
+                        'code': 5,
+                        'message': 'Office not found'
+                    },
                     'id': id
                 }
+            
+            if not office['tenant']:
+                db_close(conn, cur)
+                return {
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': 3,
+                        'message': 'Office is not rented'
+                    },
+                    'id': id
+                }
+            
+            if office['tenant'] != login:
+                db_close(conn, cur)
+                return {
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': 4,
+                        'message': 'Not your reservation'
+                    },
+                    'id': id
+                }
+            
+            if current_app.config['DB_TYPE'] == 'postgres':
+                cur.execute(
+                    "UPDATE offices SET tenant = NULL WHERE number = %s;",
+                    (office_number,)
+                )
+            else:
+                cur.execute(
+                    "UPDATE offices SET tenant = NULL WHERE number = ?;",
+                    (office_number,)
+                )
+            
+            db_close(conn, cur)
+            return {
+                'jsonrpc': '2.0',
+                'result': 'success',
+                'id': id
+            }
+            
+        except Exception as e:
+            conn.rollback()
+            db_close(conn, cur)
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': -1,
+                    'message': f'Database error: {str(e)}'
+                },
+                'id': id
+            }
     
     return {
-            'jsonrpc': '2.0',
-            'error': {
-                'code': -32601,
-                'message': 'Method not found'
-            },
-            'id': id
-        }
+        'jsonrpc': '2.0',
+        'error': {
+            'code': -32601,
+            'message': 'Method not found'
+        },
+        'id': id
+    }
