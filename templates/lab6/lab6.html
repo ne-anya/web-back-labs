@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block lab %}Лабораторная работа 6{% endblock %}
+{% block style_lab %}<link rel="stylesheet" href="{{ url_for('static', filename='lab6.css')}}">{% endblock %}
 
 {% block script %}
     <script>
@@ -145,14 +146,21 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Список кабинетов</h1>
-
-    {% if session.get('login') %}
-        <p>Текущий пользователь: <strong>{{ session.get('login') }}</strong></p>
-        <p>Общая стоимость вашей аренды: <strong><span id="total-cost">0</span> руб./день</strong></p>
-    {% else %}
-        <p>Для аренды офисов необходимо <a href="{{ url_for('lab6.login') }}">авторизоваться</a></p>
-    {% endif %}
-
-    <ul id="office-list"></ul>
+    <div class="container">
+        <h1>Список кабинетов</h1>
+        
+        {% if session.get('login') %}
+            <div style="background: #d4edda; padding: 10px; border-radius: 5px; margin-bottom: 20px;">
+                <strong>Пользователь:</strong> {{ session.get('login') }}
+            </div>
+        {% endif %}
+        
+        <ul id="office-list"></ul>
+        
+        {% if session.get('login') %}
+            <div class="total-cost">
+                Общая стоимость аренды: <span id="total-cost">0</span> руб./день
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}

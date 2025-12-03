@@ -1,0 +1,56 @@
+#office-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+}
+#office-list li {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        button:nth-child(2) {
+            background: #dc3545;
+        }
+
+        button:nth-child(2):hover {
+            background: #c82333;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .total-cost {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .total-cost span {
+            color: #007bff;
+            font-size: 1.2em;
+        }
