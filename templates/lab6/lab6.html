@@ -22,12 +22,21 @@
             .then(function(data) {
                 const office_list = data.result;
                 const ul = document.getElementById('office-list');
+                ul.innerHTML = '';
+            
+                let totalCost = 0;
+                const login = '{{ session.get("login", "") }}'; 
+
                 for(let i = 0; i < office_list.length; i++) {
                     const office = office_list[i];
                     const li = document.createElement('li');
-                    li.innerText = `${office.number}: ${office.tenant || 'свободен'}`;
+                    li.innerText = `${office.number}: ${office.tenant || 'свободен'} (${office.price} руб./день)`;
+
+                    if (office.tenant === login) {
+                        totalCost += office.price;
+                    }
                     
-                     if (!office.tenant) {
+                    if (!office.tenant) {
                         const bookingButton = document.createElement('button');
                         bookingButton.innerText = 'зарезервировать';
                         bookingButton.onclick = function() {booking(office.number)};
@@ -41,6 +50,11 @@
                     }
                     
                     ul.appendChild(li);
+
+                    const totalCostElement = document.getElementById('total-cost');
+                    if (totalCostElement) {
+                        totalCostElement.innerText = totalCost;
+                    }
                 }
             });
         }
@@ -132,5 +146,13 @@
 
 {% block main %}
     <h1>Список кабинетов</h1>
+
+    {% if session.get('login') %}
+        <p>Текущий пользователь: <strong>{{ session.get('login') }}</strong></p>
+        <p>Общая стоимость вашей аренды: <strong><span id="total-cost">0</span> руб./день</strong></p>
+    {% else %}
+        <p>Для аренды офисов необходимо <a href="{{ url_for('lab6.login') }}">авторизоваться</a></p>
+    {% endif %}
+
     <ul id="office-list"></ul>
 {% endblock %}
