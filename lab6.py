@@ -55,6 +55,48 @@ def api():
                     'id': id
                 }
     
+    elif data['method'] == 'cancellation':
+        login = session.get('login')
+        if not login:
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 1,
+                    'message': 'Unauthorized'
+                },
+                'id': id
+            }
+        
+        office_number = data['params']
+        for office in offices:
+            if office['number'] == office_number:
+                if not office.get('tenant'):
+                    return {
+                        'jsonrpc': '2.0',
+                        'error': {
+                            'code': 3,
+                            'message': 'Office is not rented'
+                        },
+                        'id': id
+                    }
+                
+                if office['tenant'] != login:
+                    return {
+                        'jsonrpc': '2.0',
+                        'error': {
+                            'code': 4,
+                            'message': 'Not your reservation'
+                        },
+                        'id': id
+                    }
+                
+                office['tenant'] = None
+                return {
+                    'jsonrpc': '2.0',
+                    'result': 'success',
+                    'id': id
+                }
+    
     return {
             'jsonrpc': '2.0',
             'error': {
