@@ -83,19 +83,19 @@ films = [
 ]
 
 
-@lab7.route('/lab7/rest-api/films', methods=['GET'])
+@lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
     return films
 
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
+@lab7.route('/lab7/rest-api/films/<int:id>/', methods=['GET'])
 def get_film(id):
     if id < 0 or id >= len(films):
         return {"error": "Фильм не найден"}, 404
     return films[id]
 
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+@lab7.route('/lab7/rest-api/films/<int:id>/', methods=['DELETE'])
 def del_film(id):
     if id < 0 or id >= len(films):
         return {"error": "Фильм не найден"}, 404
@@ -104,7 +104,7 @@ def del_film(id):
     return '', 204
 
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
+@lab7.route('/lab7/rest-api/films/<int:id>/', methods=['PUT'])
 def put_film(id):
     if id < 0 or id >= len(films):
         return {"error": "Фильм не найден"}, 404
