@@ -19,6 +19,9 @@
     width: 400px;
     display: none;
 }
+.error-message {
+    color: red;
+}
 </style>
 {% endblock %}
 
@@ -55,6 +58,7 @@
     <label>
         Год выпуска:
         <input type="number" id="year">
+        <div id="description-error" class="error-message"></div>
     </label><br><br>
 
     <label>
