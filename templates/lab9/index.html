@@ -2,8 +2,77 @@
 
 {% block lab %}Лабораторная работа 9{% endblock %}
 
-{% block script %}{% endblock %}
-
 {% block main %}
-<h1>Поздравления</h1>
+<div style="padding: 20px;">
+    <h1>Новогодние подарки</h1>
+    
+    <div style="margin: 20px 0;">
+        <p>
+            Открыто: <span id="opened-count" style="font-weight: bold;">{{ opened_count }}</span> |
+            Осталось: <span id="unopened-count" style="font-weight: bold;">{{ unopened_count }}</span> |
+            Можно открыть: <span style="font-weight: bold;">{{ 3 - opened_count }}</span>
+        </p>
+    </div>
+    
+    <div style="position: relative; height: 500px; margin: 30px 0;">
+        {% for i in range(1, 11) %}
+        <img src="/static/lab9/gift{{ i }}.jpg"
+             id="gift-{{ i }}"
+             style="
+                position: absolute;
+                top: {{ positions[i-1].top }};
+                left: {{ positions[i-1].left }};
+                width: 80px;
+                height: 80px;
+                cursor: {% if i in opened %}default{% else %}pointer{% endif %};
+                opacity: {% if i in opened %}0.3{% else %}1{% endif %};
+             "
+             alt="Подарок {{ i }}">
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function openGift(giftId) {
+        const giftImg = document.getElementById('gift-' + giftId);
+        
+        if (giftImg.style.opacity === '0.3') {
+            return;
+        }
+        
+        fetch('/lab9/open', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: giftId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('opened-count').textContent = data.opened_count;
+                document.getElementById('unopened-count').textContent = data.unopened_count;
+                
+                giftImg.style.opacity = '0.3';
+                giftImg.style.cursor = 'default';
+                
+                alert(data.congratulation);
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            alert('Произошла ошибка');
+        });
+    }
+    
+    {% for i in range(1, 11) %}
+        {% if i not in opened %}
+            document.getElementById('gift-{{ i }}').addEventListener('click', function() {
+                openGift({{ i }});
+            });
+        {% endif %}
+    {% endfor %}
+</script>
 {% endblock %}
