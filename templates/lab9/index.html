@@ -3,76 +3,495 @@
 {% block lab %}Лабораторная работа 9{% endblock %}
 
 {% block main %}
-<div style="padding: 20px;">
-    <h1>Новогодние подарки</h1>
-    
-    <div style="margin: 20px 0;">
-        <p>
-            Открыто: <span id="opened-count" style="font-weight: bold;">{{ opened_count }}</span> |
-            Осталось: <span id="unopened-count" style="font-weight: bold;">{{ unopened_count }}</span> |
-            Можно открыть: <span style="font-weight: bold;">{{ 3 - opened_count }}</span>
-        </p>
+<div class="lab9-container">
+    <!-- Заголовок -->
+    <div class="new-year-header">
+        <h1>🎄 Новогодние Подарки 🎅</h1>
+        <p class="subtitle">Откройте 3 коробки с подарками и получите поздравления!</p>
     </div>
     
-    <div style="position: relative; height: 500px; margin: 30px 0;">
-        {% for i in range(1, 11) %}
-        <img src="/static/lab9/gift{{ i }}.jpg"
-             id="gift-{{ i }}"
-             style="
-                position: absolute;
-                top: {{ positions[i-1].top }};
-                left: {{ positions[i-1].left }};
-                width: 80px;
-                height: 80px;
-                cursor: {% if i in opened %}default{% else %}pointer{% endif %};
-                opacity: {% if i in opened %}0.3{% else %}1{% endif %};
-             "
-             alt="Подарок {{ i }}">
+    <!-- Статистика -->
+    <div class="stats-box">
+        <div class="stat-item">
+            <div class="stat-label">Открыто коробок</div>
+            <div class="stat-value" id="opened-count">{{ opened_count }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Осталось коробок</div>
+            <div class="stat-value" id="remaining-count">{{ remaining_count }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Можно открыть</div>
+            <div class="stat-value" id="can-open">{{ 3 - opened_count }}</div>
+        </div>
+    </div>
+    
+    <!-- Поле с коробками -->
+    <div class="gifts-field">
+        {% for i in range(10) %}
+        <div class="gift-box {% if i in opened_boxes %}opened{% endif %}" 
+             id="box-{{ i }}"
+             style="top: {{ positions[i].top }}; left: {{ positions[i].left }};">
+            
+            {% if i in opened_boxes %}
+            <!-- Открытая коробка -->
+            <div class="opened-box">
+                <span class="opened-text">Открыто</span>
+            </div>
+            {% else %}
+            <!-- Закрытая коробка -->
+            <div class="closed-box">
+                <span class="box-number">{{ i + 1 }}</span>
+            </div>
+            {% endif %}
+        </div>
         {% endfor %}
+    </div>
+    
+    <!-- Инструкция -->
+    <div class="instructions">
+        <h3>🎁 Как играть:</h3>
+        <ol>
+            <li>Кликните на любую коробку с подарком</li>
+            <li>Прочитайте уникальное новогоднее поздравление</li>
+            <li>Посмотрите на полученный подарок</li>
+            <li>Можно открыть только 3 коробки!</li>
+            <li>Состояние сохраняется между сессиями</li>
+        </ol>
+    </div>
+</div>
+
+<!-- Модальное окно для подарка -->
+<div id="gift-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🎁 Вы получили подарок!</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div id="congratulation-text" class="congratulation"></div>
+            <div class="gift-image-container">
+                <img id="gift-image" src="" alt="Подарок" class="gift-image">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="close-modal" class="btn">Закрыть</button>
+        </div>
     </div>
 </div>
 
 <script>
-    function openGift(giftId) {
-        const giftImg = document.getElementById('gift-' + giftId);
-        
-        if (giftImg.style.opacity === '0.3') {
-            return;
-        }
-        
-        fetch('/lab9/open', {
+// Глобальные переменные
+let openedBoxes = {{ opened_boxes|tojson }};
+let canOpen = {{ 3 - opened_count }};
+
+// Функция открытия коробки
+async function openBox(boxId) {
+    const boxElement = document.getElementById('box-' + boxId);
+    
+    // Проверяем, не открыта ли уже
+    if (boxElement.classList.contains('opened')) {
+        alert('Эта коробка уже открыта!');
+        return;
+    }
+    
+    // Проверяем, можно ли еще открывать
+    if (canOpen <= 0) {
+        alert('Вы уже открыли 3 коробки! Больше нельзя.');
+        return;
+    }
+    
+    // Отправляем запрос на сервер
+    try {
+        const response = await fetch('/lab9/open_box', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: giftId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById('opened-count').textContent = data.opened_count;
-                document.getElementById('unopened-count').textContent = data.unopened_count;
-                
-                giftImg.style.opacity = '0.3';
-                giftImg.style.cursor = 'default';
-                
-                alert(data.congratulation);
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-            alert('Произошла ошибка');
+            body: JSON.stringify({ box_id: boxId })
         });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Обновляем интерфейс
+            updateUI(boxId, data);
+            
+            // Показываем подарок
+            showGiftModal(data.congratulation, data.gift_image);
+        } else {
+            alert(data.message);
+        }
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при открытии коробки');
+    }
+}
+
+// Функция обновления интерфейса
+function updateUI(boxId, data) {
+    // Помечаем коробку как открытую
+    const box = document.getElementById('box-' + boxId);
+    box.classList.add('opened');
+    
+    // Обновляем содержимое коробки
+    box.innerHTML = `
+        <div class="opened-box">
+            <span class="opened-text">Открыто</span>
+        </div>
+    `;
+    
+    // Обновляем счетчики
+    document.getElementById('opened-count').textContent = data.opened_count;
+    document.getElementById('remaining-count').textContent = data.remaining_count;
+    document.getElementById('can-open').textContent = data.can_open;
+    
+    // Обновляем глобальные переменные
+    openedBoxes.push(boxId);
+    canOpen = data.can_open;
+}
+
+// Функция показа модального окна с подарком
+function showGiftModal(congratulation, giftImage) {
+    const modal = document.getElementById('gift-modal');
+    const congratulationText = document.getElementById('congratulation-text');
+    const giftImageElement = document.getElementById('gift-image');
+    
+    // Заполняем данными
+    congratulationText.textContent = congratulation;
+    giftImageElement.src = giftImage;
+    giftImageElement.alt = "Новогодний подарок";
+    
+    // Показываем модальное окно
+    modal.style.display = 'block';
+}
+
+// Закрытие модального окна
+function closeModal() {
+    document.getElementById('gift-modal').style.display = 'none';
+}
+
+// Вешаем обработчики событий при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчики для коробок
+    document.querySelectorAll('.gift-box:not(.opened)').forEach(box => {
+        const boxId = parseInt(box.id.split('-')[1]);
+        box.addEventListener('click', () => openBox(boxId));
+        
+        // Эффект при наведении
+        box.addEventListener('mouseover', function() {
+            if (!this.classList.contains('opened')) {
+                this.style.transform = 'scale(1.05)';
+            }
+        });
+        
+        box.addEventListener('mouseout', function() {
+            if (!this.classList.contains('opened')) {
+                this.style.transform = 'scale(1)';
+            }
+        });
+    });
+    
+    // Обработчики для модального окна
+    document.querySelector('.close').addEventListener('click', closeModal);
+    document.getElementById('close-modal').addEventListener('click', closeModal);
+    
+    // Закрытие по клику вне окна
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('gift-modal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Закрытие по клавише ESC
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+});
+</script>
+
+<style>
+/* Основные стили */
+.lab9-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Заголовок */
+.new-year-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.new-year-header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    margin: 10px 0 0 0;
+    opacity: 0.9;
+}
+
+/* Статистика */
+.stats-box {
+    display: flex;
+    justify-content: space-around;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 30px 0;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    border: 2px solid #ff6b6b;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    color: #ff6b6b;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 3em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Поле с коробками */
+.gifts-field {
+    position: relative;
+    height: 600px;
+    margin: 40px 0;
+    background: linear-gradient(180deg, #e8f4f8 0%, #d1ecf1 100%);
+    border-radius: 20px;
+    border: 4px solid #ff6b6b;
+    overflow: hidden;
+}
+
+.gift-box {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.gift-box.opened {
+    cursor: default;
+    opacity: 0.5;
+}
+
+/* Закрытая коробка */
+.closed-box {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+    border: 5px solid #ffeb3b;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.closed-box:before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 100%;
+    background: #4caf50;
+    transform: rotate(45deg);
+    left: 30px;
+    opacity: 0.8;
+}
+
+.box-number {
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+/* Открытая коробка */
+.opened-box {
+    width: 100%;
+    height: 100%;
+    background: #bdc3c7;
+    border: 3px dashed #7f8c8d;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.opened-text {
+    color: #7f8c8d;
+    font-weight: bold;
+    transform: rotate(-45deg);
+    font-size: 0.9em;
+}
+
+/* Инструкция */
+.instructions {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-top: 40px;
+    border-left: 5px solid #ff6b6b;
+}
+
+.instructions h3 {
+    color: #ff6b6b;
+    margin-top: 0;
+}
+
+.instructions ol {
+    padding-left: 20px;
+    line-height: 1.6;
+}
+
+.instructions li {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 0;
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.close {
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #ffeb3b;
+}
+
+.modal-body {
+    padding: 30px;
+    text-align: center;
+}
+
+.congratulation {
+    font-size: 1.2em;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    color: #2c3e50;
+}
+
+.gift-image-container {
+    margin: 20px 0;
+}
+
+.gift-image {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 10px;
+    border: 3px solid #ff6b6b;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modal-footer {
+    padding: 20px;
+    text-align: center;
+    background: #f8f9fa;
+}
+
+.btn {
+    padding: 12px 30px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #ff5252;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .stats-box {
+        flex-direction: column;
+        gap: 20px;
     }
     
-    {% for i in range(1, 11) %}
-        {% if i not in opened %}
-            document.getElementById('gift-{{ i }}').addEventListener('click', function() {
-                openGift({{ i }});
-            });
-        {% endif %}
-    {% endfor %}
-</script>
+    .gift-box {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .gifts-field {
+        height: 400px;
+    }
+    
+    .box-number {
+        font-size: 1.5em;
+    }
+    
+    .new-year-header h1 {
+        font-size: 1.8em;
+    }
+}
+</style>
 {% endblock %}
