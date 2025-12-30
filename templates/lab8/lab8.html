@@ -10,15 +10,13 @@
         <a href="/lab8/public" class="base-a">Публичные статьи</a>
         <a href="/lab8/users" class="base-a">Все пользователи</a>
         <a href="/lab8/create" class="base-a">Создать статью</a>
-    
-    {% if login %}
-        <a href="/lab8/profile" class="base-a">Мой профиль</a>
-        <a href="/lab8/logout" class="base-a logout-btn">Выйти</a>
-        <div class="name">{{ login }}</div>
+    {% if current_user.is_authenticated %}
+        <p>Вы вошли как: {{ current_user.login }}</p>
+        <p><a href="/lab8/articles/">Список статей</a></p>
+        <p><a href="/lab8/logout/">Выйти</a></p>
     {% else %}
-        <a href="/lab8/login" class="base-a">Войти</a>
-        <a href="/lab8/register" class="base-a">Регистрация</a>
-        <div class="name">Anonymous</div>
+        <p>Вы не авторизованы</p>
+        <p><a href="/lab8/login/">Вход</a> | <a href="/lab8/register/">Регистрация</a></p>
     {% endif %}
     </div>
 {% endblock %}
