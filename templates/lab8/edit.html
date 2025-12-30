@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+{% block style_lab %}<link rel="stylesheet" href="{{ url_for('static', filename='lab8.css')}}">{% endblock %}
+
+{% block main %}
+<div class="lab8-container">
+    <h1 class="lab8-title">Редактирование статьи</h1>
+    
+    {% if error %}
+        <div class="lab8-error">
+            {{ error }}
+        </div>
+    {% endif %}
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="lab8-message lab8-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form class="lab8-form" action="/lab8/edit/{{ article.id }}/" method="post">
+        <div class="lab8-form-group">
+            <label class="lab8-label" for="title">Заголовок статьи:</label>
+            <input class="lab8-input" type="text" id="title" name="title" 
+                   value="{{ article.title }}" required maxlength="50">
+            <small style="color: #666;">Максимум 50 символов</small>
+        </div>
+        
+        <div class="lab8-form-group">
+            <label class="lab8-label" for="article_title">Текст статьи:</label>
+            <textarea class="lab8-textarea" id="article_title" name="article_title" 
+                     rows="10" required>{{ article.article_title }}</textarea>
+        </div>
+        
+        <div class="lab8-checkbox-group">
+            <label class="lab8-checkbox-label">
+                <input class="lab8-checkbox" type="checkbox" name="is_public" id="is_public"
+                       {% if article.is_public %}checked{% endif %}>
+                Сделать статью публичной
+            </label>
+            <p class="lab8-checkbox-hint">
+                Публичные статьи видны всем пользователям
+            </p>
+        </div>
+        
+        <div class="lab8-checkbox-group">
+            <label class="lab8-checkbox-label">
+                <input class="lab8-checkbox" type="checkbox" name="is_favorite" id="is_favorite"
+                       {% if article.is_favorite %}checked{% endif %}>
+                Добавить в избранное
+            </label>
+        </div>
+        
+        <div style="margin-top: 20px; color: #666;">
+            <p>Статистика статьи:</p>
+            <ul style="text-align: left; margin-left: 20px;">
+                <li>Лайков: {{ article.likes }}</li>
+                <li>ID статьи: {{ article.id }}</li>
+                <li>Создана: ID пользователя {{ article.login_id }}</li>
+            </ul>
+        </div>
+        
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+            <button class="lab8-button" type="submit" style="width: 180px;">
+                Сохранить изменения
+            </button>
+            <a class="lab8-link" href="/lab8/articles/" style="padding: 12px 25px;">
+                Назад к списку
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

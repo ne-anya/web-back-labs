@@ -4,19 +4,24 @@
 {% block style_lab %}<link rel="stylesheet" href="{{ url_for('static', filename='lab8.css')}}">{% endblock %}
 
 {% block main %}
-    <h1 class="base-h1">База знаний</h1>
-    <div class="base-container">
-        <a href="/lab8/list" class="base-a">Мои статьи</a>
-        <a href="/lab8/public" class="base-a">Публичные статьи</a>
-        <a href="/lab8/users" class="base-a">Все пользователи</a>
-        <a href="/lab8/create" class="base-a">Создать статью</a>
+<div class="lab8-container">
+    <h1 class="lab8-title">База знаний</h1>
+    
     {% if current_user.is_authenticated %}
-        <p>Вы вошли как: {{ current_user.login }}</p>
-        <p><a href="/lab8/articles/">Список статей</a></p>
-        <p><a href="/lab8/logout/">Выйти</a></p>
+        <div class="lab8-user-info">
+            <p>Вы вошли как: <span class="lab8-username">{{ current_user.login }}</span></p>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <a class="lab8-link" href="/lab8/articles/">Список статей</a>
+            <a class="lab8-link" href="/lab8/logout">Выйти</a>
+        </div>
     {% else %}
-        <p>Вы не авторизованы</p>
-        <p><a href="/lab8/login/">Вход</a> | <a href="/lab8/register/">Регистрация</a></p>
+        <p class="lab8-subtitle">Вы не авторизованы</p>
+        <div style="margin-top: 30px;">
+            <a class="lab8-link" href="/lab8/login/">Вход</a>
+            <a class="lab8-link" href="/lab8/register/">Регистрация</a>
+        </div>
     {% endif %}
-    </div>
+</div>
 {% endblock %}

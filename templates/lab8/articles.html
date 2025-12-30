@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+{% block style_lab %}<link rel="stylesheet" href="{{ url_for('static', filename='lab8.css')}}">{% endblock %}
+
+{% block main %}
+<div class="lab8-container">
+    <h1 class="lab8-title">Мои статьи</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="lab8-message lab8-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% if articles %}
+        <div style="margin-bottom: 30px;">
+            <a class="lab8-link" href="/lab8/create/" style="font-size: 18px; padding: 12px 25px;">
+                Создать новую статью
+            </a>
+        </div>
+        
+        <div class="articles-list">
+            {% for article in articles %}
+                <div class="article-card" style="
+                    background: white;
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    text-align: left;
+                ">
+                    <h3 style="color: rgb(133, 14, 89); margin-top: 0;">
+                        {{ article.title }}
+                    </h3>
+                    
+                    <p style="color: #333; margin: 10px 0;">
+                        {{ article.article_title[:200] }}{% if article.article_title|length > 200 %}...{% endif %}
+                    </p>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                        <div>
+                            {% if article.is_public %}
+                                <span style="color: green; font-weight: bold;">Публичная</span>
+                            {% else %}
+                                <span style="color: #666;"> Приватная</span>
+                            {% endif %}
+                            
+                            {% if article.is_favorite %}
+                                <span style="color: gold; margin-left: 15px;">Избранная</span>
+                            {% endif %}
+                            
+                            <span style="margin-left: 15px; color: #666;">
+                                {{ article.likes }}
+                            </span>
+                        </div>
+                        
+                        <div>
+                            <a class="lab8-link" href="/lab8/edit/{{ article.id }}/" 
+                               style="padding: 5px 15px; font-size: 14px;">
+                                Редактировать
+                            </a>
+                            <a class="lab8-link" href="/lab8/delete/{{ article.id }}/" 
+                               style="padding: 5px 15px; font-size: 14px; background-color: #ffebee; color: #d32f2f;">
+                                Удалить
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px;">
+            <p style="font-size: 18px; color: #666;">У вас еще нет статей</p>
+            <a class="lab8-link" href="/lab8/create/" style="font-size: 18px; padding: 12px 25px;">
+                Создать первую статью
+            </a>
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px;">
+        <a class="lab8-link" href="/lab8/">← На главную</a>
+    </div>
+</div>
+{% endblock %}
