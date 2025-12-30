@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа 8{% endblock %}
+{% block style_lab %}<link rel="stylesheet" href="{{ url_for('static', filename='lab8.css')}}">{% endblock %}
+
+{% block main %}
+<div class="lab8-container">
+    <h1 class="lab8-title">Публичные статьи</h1>
+    <p class="lab8-subtitle">Статьи, доступные всем пользователям</p>
+    
+    {% if current_user.is_authenticated %}
+        <div style="margin-bottom: 20px; text-align: center;">
+            <p style="color: rgb(114, 18, 106);">
+                Вы вошли как: <strong>{{ current_user.login }}</strong>
+            </p>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                <a class="lab8-link" href="/lab8/articles/">Мои статьи</a>
+                <a class="lab8-link" href="/lab8/create/">Создать статью</a>
+            </div>
+        </div>
+    {% else %}
+        <div style="margin-bottom: 20px; text-align: center;">
+            <p style="color: #666;">
+                Вы просматриваете публичные статьи. 
+                <a href="/lab8/login/" style="color: rgb(133, 14, 89);">Войдите</a> или 
+                <a href="/lab8/register/" style="color: rgb(133, 14, 89);">зарегистрируйтесь</a>, 
+                чтобы создавать свои статьи.
+            </p>
+        </div>
+    {% endif %}
+    
+    {% if articles %}
+        <div class="articles-list">
+            {% for article in articles %}
+                <div class="article-card" style="
+                    background: white;
+                    border-radius: 15px;
+                    padding: 20px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                    text-align: left;
+                    border-left: 5px solid rgb(133, 14, 89);
+                ">
+                    <h3 style="color: rgb(133, 14, 89); margin-top: 0;">
+                        {{ article.title }}
+                        {% if article.is_favorite %}
+                            <span style="color: gold; font-size: 18px;">⭐</span>
+                        {% endif %}
+                    </h3>
+                    
+                    <div style="color: #666; font-size: 14px; margin-bottom: 10px;">
+                        {% if current_user.is_authenticated and article.login_id == current_user.id %}
+                            <span style="color: green; font-weight: bold;">👤 Ваша статья</span>
+                        {% else %}
+                            <span style="color: #666;">👤 Автор: ID {{ article.login_id }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p style="color: #333; margin: 10px 0; line-height: 1.5;">
+                        {{ article.article_title[:300] }}{% if article.article_title|length > 300 %}...{% endif %}
+                    </p>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
+                        <div style="color: #666; font-size: 14px;">
+                            <span style="margin-right: 15px;">
+                                {{ article.likes }} лайков
+                            </span>
+                            <span style="color: green; font-weight: bold;">
+                                Публичная
+                            </span>
+                        </div>
+                        
+                        <div>
+                            {% if current_user.is_authenticated and article.login_id == current_user.id %}
+                                <a class="lab8-link" href="/lab8/edit/{{ article.id }}/" 
+                                   style="padding: 5px 15px; font-size: 14px;">
+                                    Редактировать
+                                </a>
+                            {% endif %}
+                            
+                            {% if current_user.is_authenticated %}
+                                <button class="lab8-link like-button" 
+                                        data-article-id="{{ article.id }}"
+                                        style="padding: 5px 15px; font-size: 14px; margin-left: 10px;">
+                                    Лайк
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px;">
+            <p style="font-size: 18px; color: #666;">Публичные статьи пока отсутствуют</p>
+            {% if current_user.is_authenticated %}
+                <p style="color: #888; margin-top: 10px;">
+                    Вы можете <a href="/lab8/create/" style="color: rgb(133, 14, 89);">создать статью</a> 
+                    и сделать ее публичной.
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <div style="margin-top: 30px; text-align: center;">
+        {% if current_user.is_authenticated %}
+            <a class="lab8-link" href="/lab8/">← На главную</a>
+            <a class="lab8-link" href="/lab8/articles/" style="margin-left: 10px;">К моим статьям</a>
+        {% else %}
+            <a class="lab8-link" href="/lab8/">← На главную</a>
+            <a class="lab8-link" href="/lab8/login/" style="margin-left: 10px;">Войти</a>
+            <a class="lab8-link" href="/lab8/register/" style="margin-left: 10px;">Регистрация</a>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.like-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const articleId = this.getAttribute('data-article-id');
+            likeArticle(articleId, this);
+        });
+    });
+});
+
+function likeArticle(articleId, buttonElement) {
+    fetch(`/lab8/like/${articleId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const likesElement = buttonElement.closest('.article-card')
+                .querySelector('span:first-child');
+            const currentLikes = parseInt(likesElement.textContent.match(/\d+/)[0]);
+            likesElement.textContent = `${currentLikes + 1} лайков`;
+            
+            buttonElement.textContent = 'Лайкнуто!';
+            buttonElement.style.backgroundColor = '#ffcdd2';
+            buttonElement.disabled = true;
+            
+            buttonElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                buttonElement.style.transform = 'scale(1)';
+            }, 300);
+        } else {
+            alert('Ошибка: ' + data.error);
+        }
+    })
+    .catch(error => {
+        alert('Ошибка сети: ' + error);
+    });
+}
+</script>
+{% endblock %}
